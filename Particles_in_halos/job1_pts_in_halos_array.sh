@@ -3,7 +3,7 @@
 #SBATCH --ntasks-per-node=1
 #SBATCH --mem-per-cpu=310G
 #SBATCH --nodes=1
-#SBATCH --array=0-4
+#SBATCH --array=4,3,10
 
 source /home/ayuba/projects/def-taylor/ayuba/halo_profiles/bin/activate
 

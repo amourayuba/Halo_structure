@@ -1,16 +1,7 @@
 import numpy as np
-import matplotlib.pyplot as plt
+import sys
 import pandas as pd
-import sys, os
-import readfof
 import readgadget
-import readsnap
-import h5py
-import csv
-from scipy.optimize import minimize
-from astropy.io import ascii
-from astropy.table import Table, Column, MaskedColumn
-from fits2ds import *
 
 
 def get_part_nearHalo(pos_h, dist_max, divisions, BoxSize, sorted_ids):
@@ -39,7 +30,7 @@ def get_part_nearHalo(pos_h, dist_max, divisions, BoxSize, sorted_ids):
     par_indexes = []
     for i in range(len(i_num)):
         for j in range(len(j_num)):
-            for k in range(len(k_num)): #go through all cells, count nparticles in each cell
+            for k in range(len(k_num)):  # go through all cells, count nparticles in each cell
                 box_id = divisions ** 2 * i_num[i] + divisions * j_num[j] + k_num[k]
                 length += len(sorted_ids[box_id])
                 par_indexes.append(*sorted_ids[box_id])
@@ -82,7 +73,6 @@ if __name__ == "__main__":
     ## Load particle ids and positions
 
     ptype = [1]
-    bins = 50
     divisions = 200
 
     print('Loading pt positions and ids')
@@ -93,7 +83,8 @@ if __name__ == "__main__":
     ##############-----------HALO POSITIONS----------------###########
     with open(folder + sim + '_prefixes.txt', 'r') as file:
         prefixes = file.read().splitlines()
-    pdhalos = pd.read_table(folder + 'AHF/halos/{}.AHF_halos'.format(prefixes[118 - snp]), delim_whitespace=True, header=0)
+    pdhalos = pd.read_table(folder + 'AHF/halos/{}.AHF_halos'.format(prefixes[118 - snp]), delim_whitespace=True,
+                            header=0)
 
     print('HALO POSITIONS')
 
@@ -109,12 +100,13 @@ if __name__ == "__main__":
 
     halo_inf = []
     rmaxes = []
+    nlim = 3
     for i in range(len(hids)):
         if mfof[i] > mlim:
             Rmin = 0.9 * rvirs[i]
             Rmax = 1.1 * Rmin
             Rmean = 0.5 * (Rmin + Rmax)
-            Rmax_profile = 3 * Rmean
+            Rmax_profile = nlim * Rmean
             pos_halo = pos_h[i]
             rmaxes.append(Rmax_profile)
             id_near_h0 = get_part_nearHalo(pos_halo, Rmax_profile, divisions, BoxSize, grid_0)
@@ -126,4 +118,5 @@ if __name__ == "__main__":
     if mlim == 0:
         np.save(folder + 'parts_near_hals_{}_snap{}.npy'.format(sim, snp), np.array(halo_inf, dtype=object))
     else:
-        np.save(folder + 'parts_near_hals{:1.2e}_{}_snap{}.npy'.format(mlim, sim, snp), np.array(halo_inf, dtype=object))
+        np.save(folder + 'parts_near_hals{:1.2e}_{}_snap{}.npy'.format(mlim, sim, snp),
+                np.array(halo_inf, dtype=object))

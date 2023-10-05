@@ -1,16 +1,8 @@
 import numpy as np
-import matplotlib.pyplot as plt
-import pandas as pd
-import sys, os
-import readfof
+import sys
 import readgadget
-import readsnap
-import h5py
-import csv
-from scipy.optimize import minimize
-from astropy.io import ascii
-from astropy.table import Table, Column, MaskedColumn
-from fits2ds import *
+
+
 
 
 #################### FUNCTIONS #####################
@@ -75,7 +67,6 @@ if __name__ == "__main__":
     ptype = [1]
     save = True
     # sort the particle positions in cells
-    bins = 50
     divisions = 200
     if save:
         print('Reading pt positions and ids')
