@@ -31,5 +31,22 @@ This will produce 3 files where each is a list of particle_id, particle_position
 sbatch script to run on compute canada. Array job, parameter is the list of simulation indices. Can run with #SBATCH --array=x, y, z if one wants to do it for only simulation indices x, y, z
 
 #### *) get_particles_in_halos.py
+Given the particle files produced above and located in "folder", and AHF halos files located in folder/AHF/halos/* 
+this will associate particles and halos. 
 
-Given the particle files produced above
+Things to potentially modify in the code: 
+sims: list of the simulation names. 
+snp: snapshot number to consider 
+folder: where are the gadget files located, and where the output files will be stored
+divisions: grid size. Number of cells = divisions**3. 
+
+All of the above have to be coherent with the grid files generated from get_particles_in_grids.py. 
+nlim how many virial radii away from the halo centre to gather particles
+
+Will save a list where each element has halo_id, and particle information (id, velocity, position) for each particle
+in the halo
+
+#### *) job_pts_in_halos_array.sh
+sbatch script to run on compute canada. Array job, parameter is the list of simulation indices. 
+Can run with #SBATCH --array=x, y, z if one wants to do it for only simulation indices x, y, z
+Second parameter is the minimum halo mass to consider. 

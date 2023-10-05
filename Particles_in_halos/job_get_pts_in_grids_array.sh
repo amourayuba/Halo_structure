@@ -1,4 +1,5 @@
 #!/bin/bash
+#SBATCH --account=def-taylor
 #SBATCH -t 0-1:00
 #SBATCH --ntasks-per-node=1
 #SBATCH --mem-per-cpu=210G
