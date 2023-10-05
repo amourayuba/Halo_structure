@@ -11,9 +11,19 @@ In order to read AHF files, a {sim}_prefixes.txt doc is also located in folder, 
 i.e. each AHF file will have the form prefix.AHF_{halos, particles, profiles, substructure} 
 
 ### 1) Associating particles to halos ./Particles_in_halos 
-The set of codes in this folder allows to associate particles' positions and velocities to a set of halos. 
+The set of codes in this folder allows us to associate particles' positions and velocities to a set of halos. 
 
 #### REQUIRED : 
+numpy, Pylians : https://pylians3.readthedocs.io/en/master/, pandas
 
+As well as the requirements above for gadget and AHF files to be located in "folder". 
 
+#### *) get_particles_in_grids.py 
+The first step is to put particles in a grid of chosen size "divisions". 
+Things to potentially modify in the code: 
+sims: list of the simulation names. 
+snp: snapshot number to consider 
+folder: where are the gadget files located, and where the output files will be stored
+divisions: grid size. Number of cells = divisions**3. 
 
+#### *) get_particles_in_grids.py 
