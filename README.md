@@ -25,5 +25,11 @@ sims: list of the simulation names.
 snp: snapshot number to consider 
 folder: where are the gadget files located, and where the output files will be stored
 divisions: grid size. Number of cells = divisions**3. 
+This will produce 3 files where each is a list of particle_id, particle_positions, particle_velocities in each cell. Index of a cell is the index of the list.
 
-#### *) get_particles_in_grids.py 
+#### *) job_get_pts_in_grids_array.sh 
+sbatch script to run on compute canada. Array job, parameter is the list of simulation indices. Can run with #SBATCH --array=x, y, z if one wants to do it for only simulation indices x, y, z
+
+#### *) get_particles_in_halos.py
+
+Given the particle files produced above
