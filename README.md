@@ -50,3 +50,43 @@ in the halo
 sbatch script to run on compute canada. Array job, parameter is the list of simulation indices. 
 Can run with #SBATCH --array=x, y, z if one wants to do it for only simulation indices x, y, z
 Second parameter is the minimum halo mass to consider. 
+
+### 2) Measuring structural properties for each halos ./structural_properties
+
+#### *) fits2d.py 
+Functions calculating different halo properties, 3D or 2D. These will be used to 
+
+#### *) get_2d_3d_props.py 
+For a given simulation id, and mass lim, will calculate and save a set of 2D and 3D proprties of halos. 
+First set the simulation folder in the variable folder
+
+Files required in the folder "folder": 
+{sim}_prefixes.txt : list of AHF file prefiexes
+/folder/AHF/halos/*_AHF_halos : AHF halo files of the form {prefix}_AHF_halos
+folder/parts_near_halos*.npy : particle in halos files generated through particles_in_halos scripts
+
+outputs: 
+###### props3D*.npy : 
+list of 3D halo property, each element (represents a halo) has the following components: 
+*) conc3d: concentration parameter found through the 3D fit of the density profile 
+*) chirho3d: array of two elements. 1) result of fits2d chi_square function, 2 result of the log_chi_square function. Both 
+for the 3d density profile, fitted vs real one.
+*) chim3d: same as chirho3d for the mass profile instead of density profiles
+
+###### props2D*.npy
+list of 2D projected halo property, each element (represents a halo) has the following components:
+*) conc2d: concentration parameter found through the 2D fit of the projected density profile 
+*) chirho2d: array of two elements. 1) result of fits2d chi_square function, 2 result of the log_chi_square function. Both 
+for the 2d projected density profile, fitted vs real one.
+*) chim2d same as chirho2d for the mass profile instead of density profiles
+*) axs2d 2d axis ratio between the second and first major axis, gives ellipticity in the x-y plane
+*) vecs2d vectors major axes direction in the x-y plane
+*) mboff2d distance between the most bound particle and density peak of the halo in the x-y plane
+*) com2d distance between the centre of mass of the halo and peak of the density profile in the x-y plane
+
+#### *) job_2d_3d_props.sh 
+sbatch script to run on compute canada. Array job, parameter is the list of simulation indices. 
+Can run with #SBATCH --array=x, y, z if one wants to do it for only simulation indices x, y, z
+Second parameter is the minimum halo mass to consider. 
+Need to set up a python environment, and install the relevent packages.
+

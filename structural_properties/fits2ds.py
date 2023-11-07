@@ -1,14 +1,6 @@
 import numpy as np
-import pandas as pd
-import sys, os
-import readfof
-import readgadget
-import readsnap
-import h5py
-import csv
+import matplotlib.pyplot as plt
 from scipy.optimize import minimize
-from astropy.io import ascii
-from astropy.table import Table, Column, MaskedColumn
 
 
 #########----------------------------FUNCTIONS--------------###############
@@ -16,11 +8,11 @@ from astropy.table import Table, Column, MaskedColumn
 
 
 def Inertia3D(points, s, q):
-    '''Calculates the Inertia tensor of a set of points of equal mass in an ellipsoid where a>b>c and s=b/a and q=c/a
+    """Calculates the Inertia tensor of a set of points of equal mass in an ellipsoid where a>b>c and s=b/a and q=c/a
     points : numpy array (N,3)
     s : 0<float<=1
     q : 0<float<=1
-    return 3x3 numpy array'''
+    return 3x3 numpy array"""
     weights = points[:, 0] ** 2 + (points[:, 1] / s) ** 2 + (points[:, 2] / q) ** 2
     Iten = np.zeros((3, 3))
     for i in range(3):
@@ -33,10 +25,10 @@ def Inertia3D(points, s, q):
 
 
 def Inertia2D(points, s):
-    '''Calculates the Inertian tensor of a set of points of equal mass in an ellipse where a>b and s=b/a
+    """Calculates the Inertian tensor of a set of points of equal mass in an ellipse where a>b and s=b/a
     points : numpy array (N,2)
     s : 0<float<=1
-    return 2x2 numpy array'''
+    return 2x2 numpy array"""
     weights = points[:, 0] ** 2 + (points[:, 1] / s) ** 2
     Iten = np.zeros((2, 2))
     for i in range(2):
@@ -49,13 +41,13 @@ def Inertia2D(points, s):
 
 
 def get_new_axpos2D(pos, s, selec=False):
-    '''Gets the axis ratio and vector of a set of points in an ellispoid with axis a,b such as s=b/a
+    """Gets the axis ratio and vector of a set of points in an ellispoid with axis a,b such as s=b/a
     pos : numpy array (N,3)
     s : 0<float <=1
-    returns 
-    spos : (M,3) numpy array set of positions inside the newly defined ellipse with rotated coordinates 
+    output
+    spos : (M,3) numpy array set of positions inside the newly defined ellipse with rotated coordinates
     news : float new value of s
-    vecs : (2,2) numpy array new axis directions'''
+    vecs : (2,2) numpy array new axis directions"""
 
     val, vecs = np.linalg.eig(Inertia2D(pos, s))  # Diagonalize the Inertia tensor
 
@@ -77,13 +69,13 @@ def get_new_axpos2D(pos, s, selec=False):
 
 
 def get_axes2D(pos, selec=False, rmax=1):
-    '''Gets the axes ratio s = b/a from a set of equal mass points at pos
-    pos : numpy array (N,2) 
+    """Gets the axes ratio s = b/a from a set of equal mass points at pos
+    pos : numpy array (N,2)
     selec : bool, whether to select only particles that are within the newly defined ellispoid. ps, not sure if selec=True works
     rmax : float, the maximim radius of particles to consider.
-    Returns pos : array (N,2) final set of positions considered and rotated coordinates. 
-    news : float final converged axis ratio s/q 
-    vecs : numpy array (2,2) final converged axes directions'''
+    Returns pos : array (N,2) final set of positions considered and rotated coordinates.
+    news : float final converged axis ratio s/q
+    vecs : numpy array (2,2) final converged axes directions"""
     # FIRST TRY
     if selec:
         pos = pos[np.sum(pos ** 2, axis=1) < rmax]
@@ -103,8 +95,8 @@ def get_axes2D(pos, selec=False, rmax=1):
                 return np.Nan
 
 
-def plot_part_axes2D(newpart, iaxes=None, haloc=[0, 0], rvir=1):
-    ''' Handy way to plot the distribution of particles and axes'''
+def plot_part_axes2D(newpart, iaxes=None, haloc=(0, 0), rvir=1):
+    """ Handy way to plot the distribution of particles and axes"""
     fig, ax = plt.subplots(1, 1, figsize=(4, 4))
 
     ax.scatter(newpart[:, 0], newpart[:, 1], s=1)
@@ -121,12 +113,6 @@ def plot_part_axes2D(newpart, iaxes=None, haloc=[0, 0], rvir=1):
         ax.legend()
 
 
-## $\chi^2$ of the Mass profile 
-
-G = 4.30091e-9  # Units Mpc/Msun x (km/s)^2
-rho_c = 3 * 100 ** 2 / (8 * np.pi * G)  # h^2xMsun/Mpc**3
-
-
 def hubble_ratio(z, omega_l0=0.7, omega_m0=0.3, omega_r0=1e-4):
     """The value of H(z)/H0 at any given redshift for any set of present content of the
     universe"""
@@ -135,7 +121,7 @@ def hubble_ratio(z, omega_l0=0.7, omega_m0=0.3, omega_r0=1e-4):
 
 
 def rhos(z, c, om0):
-    '''NFW rho_s at c and z'''
+    """NFW rho_s at c and z"""
     deltac = 200 * c ** 3 / (3 * (np.log(1 + c) - c / (1 + c)))
     return deltac * rho_c * hubble_ratio(z, omega_l0=1 - om0, omega_m0=om0) ** 2
 
@@ -244,13 +230,13 @@ def NFW2d(R, c, rvir, om0, z=0):
 
 
 def chi_square(f, x_data, y_data, unc):
-    '''Gives the chi**2 of a set of points following the function f with the wiki def of chi**2'''
+    """Gives the chi**2 of a set of points following the function f with the wiki def of chi**2"""
     # return np.sum((f(x_data)-y_data)**2/f(x_data))
     return np.sum((f(x_data) - y_data) ** 2 / unc ** 2)
 
 
 def log_chi_square(f, x_data, y_data):
-    '''Gives the chi**2 of a set of points following the function f with the more reasonable def of chi**2'''
+    """Gives the chi**2 of a set of points following the function f with the more reasonable def of chi**2"""
     nbins = len(x_data)
     return np.sum((np.log10(f(x_data) / y_data)) ** 2) / nbins
 
@@ -271,7 +257,7 @@ def prob2D(R, Rmin, Rmax, loga):
 
 
 def N_frac(R, dmax, a):
-    return N_tilde(R, np.log10(a)) / N_tilde(dmax, np.log10(a))
+    return Ntilde(R, np.log10(a)) / Ntilde(dmax, np.log10(a))
 
 
 def likelihood(rmin, rmax, loga, func, rad_arrays):
@@ -282,11 +268,11 @@ def likelihood(rmin, rmax, loga, func, rad_arrays):
     return likelihood
 
 
-def minimisation(fonction, rmin, rmax, func, rad_arrays, x0, argbounds=None, methode=None):
+def minimisation(function, rmin, rmax, func, rad_arrays, x0, argbounds=None, methode=None):
     def f(x):
-        return fonction(rmin, rmax, x, func, rad_arrays)
+        return function(rmin, rmax, x, func, rad_arrays)
 
-    if methode == None:
+    if methode is None:
         return minimize(f, x0, bounds=argbounds).x
     else:
         return minimize(f, x0, method=methode, bounds=argbounds).x
@@ -295,7 +281,7 @@ def minimisation(fonction, rmin, rmax, func, rad_arrays, x0, argbounds=None, met
 
 
 def g_pot_r(particle_pos, halo_c, nbins=1000, mpart=9690706183.9515):
-    '''Calculates the gravitation potential of equal mass set of particles'''
+    """Calculates the gravitation potential of equal mass set of particles"""
 
     prads = np.sqrt(np.sum((particle_pos - halo_c) ** 2, axis=1))  # calculates the radius
 
@@ -308,7 +294,7 @@ def g_pot_r(particle_pos, halo_c, nbins=1000, mpart=9690706183.9515):
 
 
 def get_binding_e(p_pos, vel_sel, halo_c, nbins=1000, mpart=9690706183.9515):
-    '''Calculates the binding Energy (not considering phi0, total halo Energy)'''
+    """Calculates the binding Energy (not considering phi0, total halo Energy)"""
     rad_sel, rb, pot = g_pot_r(p_pos, halo_c, nbins, mpart)  # Potential Phi(r)
     argbin = np.digitize(rad_sel, rb[1:-1])  # Gives where each particle's radial bin is
 
@@ -328,7 +314,7 @@ def load_parts(halo_inf, pdhalos, halid, rvirlim=3):
     xh, yh, zh, rvir = pdhalos['Xc(6)'].loc[ahfid] / 1e3, pdhalos['Yc(7)'].loc[ahfid] / 1e3, pdhalos['Zc(8)'].loc[
         ahfid] / 1e3, pdhalos['Rhalo(12)'].loc[ahfid] / 1e3
     vxh, vyh, vzh, mvir = pdhalos['VXc(9)'].loc[ahfid], pdhalos['VYc(10)'].loc[ahfid], pdhalos['VZc(11)'].loc[ahfid], \
-    pdhalos['Mhalo(4)'].loc[ahfid]
+        pdhalos['Mhalo(4)'].loc[ahfid]
 
     part_pos = parts.copy()
     if xh % 500 < rvirlim * rvir:
@@ -389,7 +375,8 @@ def get_com_off1(part_pos, rads, rvir, halo_c):
 
 def get_conc3d(radii, rvir, rmin=0, rmax=1.2):
     resu = \
-    minimisation(likelihood, rmin * rvir, rmax * rvir, prob3D, radii, np.log10(np.median(radii)), methode='COBYLA')[0]
+        minimisation(likelihood, rmin * rvir, rmax * rvir, prob3D, radii, np.log10(np.median(radii)), methode='COBYLA')[
+            0]
     return rvir / 10 ** resu
 
 
@@ -397,8 +384,9 @@ def get_conc2d(rads, rvir, rmin=0, rmax=1.2):
     res = []
     for radii in rads:
         resu = \
-        minimisation(likelihood, rmin * rvir, rmax * rvir, prob2D, radii, np.log10(np.median(radii)), methode='COBYLA')[
-            0]
+            minimisation(likelihood, rmin * rvir, rmax * rvir, prob2D, radii, np.log10(np.median(radii)),
+                         methode='COBYLA')[
+                0]
         res.append(rvir / 10 ** resu)
     return np.array(res)
 
@@ -436,12 +424,17 @@ def get_chi2d(conc, rads, rvir, mvir, z=0, nbins=10, mpart=9690706183.9515, om0=
     c_redbin = np.sqrt(redbins[1:] * redbins[:-1])
 
     def fm(x):
-        return Mass_NFW2d(x, conc, rvir, z, om0)
+        return Mass_NFW2d(x, conc, rvir, om0, z)
 
     def frho(x):
-        return NFW2d(x, conc, rvir, z, om0)
+        return NFW2d(x, conc, rvir, om0, z)
 
     chim = np.array([chi_square(fm, c_redbin, mass_p, mass_u) / mvir, log_chi_square(fm, c_redbin, sig_d)])
 
     chirho = np.array([chi_square(frho, c_redbin, sig_d, sig_u) / mvir, log_chi_square(frho, c_redbin, sig_d)])
     return chim, chirho
+
+
+if __name__ == "__main__":
+    G = 4.30091e-9  # Units Mpc/Msun x (km/s)^2
+    rho_c = 3 * 100 ** 2 / (8 * np.pi * G)  # h^2xMsun/Mpc**3

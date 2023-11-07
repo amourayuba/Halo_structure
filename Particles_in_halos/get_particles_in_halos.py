@@ -33,7 +33,6 @@ def get_part_nearHalo(pos_h, dist_max, divisions, BoxSize, sorted_ids):
             for k in range(len(k_num)):  # go through all cells, count nparticles in each cell
                 box_id = divisions ** 2 * i_num[i] + divisions * j_num[j] + k_num[k]
                 length += len(sorted_ids[box_id])
-                par_indexes.append(*sorted_ids[box_id])
     par_indexes = np.empty(length, dtype=np.uint32)
 
     # select the particles                                             
